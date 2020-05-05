@@ -4,31 +4,35 @@ const User = db.user;
 const TaskType = db.tasktype;
 const TaskStatus = db.taskstatus;
 const Customer = db.customer;
+const Platform = db.taskplatform;
+//const Comment = db.taskcomments;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new task
 exports.create = (req, res) => {
   // Validate request
-  if (!req.body.taskname) {
-    res.status(400).send({
-      message: "Task name can not be empty!"
-    });
-    return;
-  }
+  // if (!req.body.taskname) {
+  //   res.status(400).send({
+  //     message: "Task name can not be empty!"
+  //   });
+  //   return;
+  // }
 
   // Create a Task
   const taskValues = {
-    taskName: req.body.taskname,
-    taskDate: req.body.taskdate,
-    numberOfResource: req.body.resourcenumber,
-    numberOfRound: req.body.roundnumber,
-    percentOfComplete: req.body.completepercent,
+    taskName: req.body.taskName,
+    taskDate: req.body.taskDate,
+    numberOfResource: req.body.numberOfResource,
+    numberOfRound: req.body.numberOfRound,
+    percentOfComplete: req.body.percentOfComplete,
     ECD: req.body.ECD,
-    timeSpent: req.body.timespent,
-    userId: req.body.userid,
-    tasktypeId: req.body.tasktypeid,
-    customerId: req.body.customerid,
-    taskstatusId: req.body.taskstatusid
+    timeSpent: req.body.timeSpent,
+    userId: req.body.userId,
+    tasktypeId: req.body.tasktypeId,
+    customerId: req.body.customerId,
+    taskstatusId: req.body.taskstatusId,
+    taskPlatformId: req.body.taskPlatformId,
+    taskComments: req.body.taskComments
   };
 
   // Save task in the database
@@ -44,6 +48,134 @@ exports.create = (req, res) => {
     });
 };
 
+//GET http://my.api.url/posts?sort=["title","ASC"]&range=[0, 24]&filter={"title":"bar"}
+// Retrieve all task from the database.
+exports.findAndCountAll = (req, res) => {
+  let taskname = null;
+  let taskdatefrom = null;
+  let taskdateto = null;
+  let resource = null;
+  let round = null;
+  let completefrom = null;
+  let completeto = null;
+  let ECDfrom = null;
+  let ECDto = null;
+  let timespentfrom = null;
+  let timespentto = null;
+  let userid = null;
+  let tasktypeid = null;
+  let customerid = null;
+  let taskstatusid = null;
+  let taskplatformid = null;
+  
+  var sort = JSON.parse(req.query['sort']);
+  var range = JSON.parse(req.query['range']);
+  var filter = JSON.parse(req.query['filter']);
+
+  console.log(sort);
+  console.log(range);
+  console.log(filter);
+  console.log("+++++++++++++++++++");
+  //let whereCondition = [{}];
+  for(var myKey in filter) {
+    console.log(myKey + ":" + filter[myKey]);
+    if(myKey === "taskName"){
+      taskname = {taskName: { [Op.like]: `%${filter[myKey]}%` }};
+    }else if(myKey === "taskDate"){
+      taskdatefrom = {taskDate: { [Op.gte]: filter[myKey] }};
+    }else if(myKey === "numberOfResource"){
+      resource = {numberOfResource: { [Op.eq]: filter[myKey] }};
+    }else if(myKey === "numberOfRound"){
+      round = {numberOfRound: { [Op.eq]: filter[myKey] }};
+    }else if(myKey === "percentOfComplete"){
+      completeto = {percentOfComplete: { [Op.lte]: filter[myKey] }};
+    }else if(myKey === "ECD"){
+      ECDto = {ECD: { [Op.lte]: filter[myKey] }};
+    }else if(myKey === "timeSpent"){
+      timespentfrom = {timeSpent: { [Op.gte]: filter[myKey] }};
+    }else if(myKey === "userId"){
+      userid = {userId: { [Op.eq]: filter[myKey] }};
+    }else if(myKey === "tasktypeId"){
+      tasktypeid = {tasktypeId: { [Op.eq]: filter[myKey] }};
+    }else if(myKey === "customerId"){
+      customerid = {customerId: { [Op.eq]: filter[myKey] }};
+    }else if(myKey === "taskstatusId"){
+      taskstatusid = {taskstatusId: { [Op.eq]: filter[myKey] }};
+    }else if(myKey === "taskPlatformId"){
+      taskplatformid = {taskPlatformId: { [Op.eq]: filter[myKey] }};
+    }    
+  }
+// console.log("task after for "+JSON.stringify(taskname, null, 2));
+// console.log("resource after for "+JSON.stringify(resource, null, 2));
+//var condition = { taskname, resource };
+//   .findAndCountAll({
+//     where: {
+//        title: {
+//          $like: 'foo%'
+//        }
+//     },
+//     offset: 10,
+//     limit: 2
+//  })
+//  .then(function(result) {
+//    console.log(result.count);
+//    console.log(result.rows);
+//  });
+  Task.findAndCountAll({
+    include: [{
+      model: User,
+      required: true
+     },{
+      model: TaskType,
+      required: true
+     },{
+      model: TaskStatus,
+      required: true
+     },{
+      model: Customer,
+      required: true
+     },{
+      model: Platform,
+      required: true
+     }],
+    where: [{},
+      taskname,
+      taskdatefrom,
+      taskdateto,
+      resource,
+      round,
+      completefrom,
+      completeto,
+      ECDfrom,
+      ECDto,
+      timespentfrom,
+      timespentto,
+      userid,
+      tasktypeid,
+      customerid,
+      taskstatusid,
+      taskplatformid,
+    ],
+    order: [
+      sort
+  ]
+  }).then(data => {
+    console.log(data.count);
+    res.setHeader('content-range', data.count);
+    console.log(JSON.stringify(data.rows, null, 2));
+    res.send(data.rows);
+  })
+  .catch(err => {
+    res.status(500).send({
+      message:
+        err.message || "Some error occurred while retrieving tasks."
+    });
+  });
+
+
+};
+
+/*
 // Retrieve all task from the database.
 exports.findAll = (req, res) => {
  
@@ -126,20 +258,56 @@ exports.findAll = (req, res) => {
       });
     });
 };
-
+*/
 // Find a single task with an id
 exports.findOne = (req, res) => {
-  const id = req.params.id;
-
-  Task.findByPk(id)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error retrieving Tutorial with id=" + id
-      });
+  console.log("*** start findOne req.params is here: ");
+  console.log(req.params.id);
+  const tId = req.params.id;
+  let findById = {id: { [Op.eq]: tId }}
+  Task.findAndCountAll({
+    include: [{
+      model: User,
+      required: true
+     },{
+      model: TaskType,
+      required: true
+     },{
+      model: TaskStatus,
+      required: true
+     },{
+      model: Customer,
+      required: true
+     },{
+      model: Platform,
+      required: true
+     }],
+    where: [{},
+      findById,
+    ]
+  }).then(data => {
+    console.log(data.count);
+    res.setHeader('content-range', data.count);
+    console.log("**** findOne data: "+JSON.stringify(data.rows, null, 2));
+    res.send(data.rows);
+  })
+  .catch(err => {
+    res.status(500).send({
+      message:
+        err.message || "Some error occurred while retrieving tasks."
     });
+  });
+
+  // Task.findByPk(id)
+  //   .then(data => {
+  //     console.log("/////////////////////////response data in task.findone"+JSON.stringify(data, null, 2));
+  //     res.send(data);
+  //   })
+  //   .catch(err => {
+  //     res.status(500).send({
+  //       message: "Error retrieving Tutorial with id=" + id
+  //     });
+  //   });
 };
 
 // Update a task by the id in the request
@@ -152,7 +320,7 @@ exports.update = (req, res) => {
     .then(num => {
       if (num == 1) {
         res.send({
-          message: "Task was updated successfully."
+          message: { success: true }
         });
       } else {
         res.send({

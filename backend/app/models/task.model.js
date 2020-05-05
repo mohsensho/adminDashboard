@@ -26,6 +26,9 @@ module.exports = (sequelize, Sequelize) => {
         },
         timeSpent: {
             type: Sequelize.INTEGER
+        },
+        taskComments: {
+            type: Sequelize.TEXT
         }
 
      });

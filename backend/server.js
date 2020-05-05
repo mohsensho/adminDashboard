@@ -1,15 +1,32 @@
 const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-
 const app = express();
+const bodyParser = require("body-parser");
+var cors = require('cors');
+
+
 
 var corsOptions = {
-  origin: "http://localhost:9091"
+  origin: "http://localhost:3000",
 };
 
-app.use(cors(corsOptions));
+//app.use(cors(corsOptions));
+app.use(cors());
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Expose-Headers", "X-Total-Count, content-range");
+  next();
+});
+
+
+// app.use(function(req, res, next) {
+//     res.header("Access-Control-Allow-Origin", "*");
+//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+//     res.header("Access-Control-Expose-Headers", "X-Total-Count, content-range");
+//     next(); // make sure we go to the next routes and don't stop here
+// });
+app.set('etag', false);
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -23,6 +40,9 @@ const User = db.user;
 const Customers = db.customer;
 const TaskTypes = db.tasktype;
 const TaskStatus = db.taskstatus;
+const TaskComments = db.taskcomments;
+const TaskPlatform = db.taskplatform;
+const TaskTable = db.task;
 
 // db.sequelize.sync();
 // initial();
@@ -69,6 +89,13 @@ function initial() {
     email: "mohsen.shojaeifar@lamresearch.com",
     password: "$2a$08$gDmNSi.g9j2hA8CjPP3f.eMpFVl3Ef3Wq3kzvpE/YMPuZflHKlmv2"
   });
+  User.create({
+    username: "nasrinmo",
+    email: "nasrin.mostajeran@lamresearch.com",
+    password: "$2a$08$gDmNSi.g9j2hA8CjPP3f.eMpFVl3Ef3Wq3kzvpE/YMPuZflHKlmv2"
+  });
+
+ 
   // Task types table initial records
   TaskTypes.create({
     tType: "Escalation"
@@ -108,20 +135,79 @@ function initial() {
     cName: "Samsung"
   });
 
-  // customers table initial records
-  Customers.create({
-    cName: "2300 Dep"
+  // platform table initial records
+  TaskPlatform.create({
+    tPlatform: "2300 Dep"
   }); 
-  Customers.create({
-    cName: "2300 ETCH"
+  TaskPlatform.create({
+    tPlatform: "2300 ETCH"
   });
-  Customers.create({
-    cName: "2300 Clean"
+  TaskPlatform.create({
+    tPlatform: "2300 Clean"
   });
-  Customers.create({
-    cName: "C3 Altus"
+  TaskPlatform.create({
+    tPlatform: "C3 Altus"
   });
-  Customers.create({
-    cName: "C3 EF"
+  TaskPlatform.create({
+    tPlatform: "C3 EF"
+  });
+
+  // Comment table initial records
+  TaskComments.create({
+    tComments: "Comment 1"
+  }); 
+  TaskComments.create({
+    tComments: "Comment 2"
+  });
+  TaskTable.create({
+    taskName: 'task 1',
+    taskDate: '2020-05-03 04:03:10',
+    numberOfResource: 2,
+    numberOfRound: 2,
+    percentOfComplete: 55,
+    ECD: '2020-05-03 04:03:10',
+    timeSpent: 2,
+    createdAt: '2020-05-03 04:03:10',
+    updatedAt: '2020-05-03 04:03:10',
+    userId: 1,
+    tasktypeId: 1,
+    customerId: 1,
+    taskstatusId: 1,
+    taskComments: "Comment 1",
+    taskPlatformId: 1
+  });
+  TaskTable.create({
+    taskName: 'task 2',
+    taskDate: '2021-05-03 04:03:10',
+    numberOfResource: 3,
+    numberOfRound: 3,
+    percentOfComplete: 65,
+    ECD: '2022-05-03 04:03:10',
+    timeSpent: 3,
+    createdAt: '2020-05-03 04:03:10',
+    updatedAt: '2020-05-03 04:03:10',
+    userId: 2,
+    tasktypeId: 2,
+    customerId: 2,
+    taskstatusId: 2,
+    taskComments: "Comment 2",
+    taskPlatformId: 2
+  });
+  TaskTable.create({
+    taskName: 'task 22',
+    taskDate: '2023-05-03 04:03:10',
+    numberOfResource: 4,
+    numberOfRound: 4,
+    percentOfComplete: 75,
+    ECD: '2024-05-03 04:03:10',
+    timeSpent: 4,
+    createdAt: '2020-05-03 04:03:10',
+    updatedAt: '2020-05-03 04:03:10',
+    userId: 1,
+    tasktypeId: 3,
+    customerId: 3,
+    taskstatusId: 3,
+    taskComments: "Comment 3",
+    taskPlatformId: 3
   });
 }

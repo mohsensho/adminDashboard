@@ -57,8 +57,8 @@ db.task.belongsTo(db.customer);
 db.taskstatus.hasMany(db.task); 
 db.task.belongsTo(db.taskstatus);
 
-db.taskcomments.hasMany(db.task); 
-db.task.belongsTo(db.taskcomments);
+// db.taskcomments.hasMany(db.task); 
+// db.task.belongsTo(db.taskcomments);
 
 db.taskplatform.hasMany(db.task); 
 db.task.belongsTo(db.taskplatform);
@@ -76,8 +76,8 @@ db.taskarchive.belongsTo(db.taskstatus);
 db.task.hasMany(db.taskarchive);  
 db.taskarchive.belongsTo(db.task);
 
-db.taskcomments.hasMany(db.taskarchive); 
-db.taskarchive.belongsTo(db.taskcomments);
+// db.taskcomments.hasMany(db.taskarchive); 
+// db.taskarchive.belongsTo(db.taskcomments);
 
 db.taskplatform.hasMany(db.taskarchive); 
 db.taskarchive.belongsTo(db.taskplatform);

@@ -5,9 +5,10 @@ module.exports = app => {
   
     // Create a new Tutorial
     router.post("/", task.create);
+  //GET http://my.api.url/posts?sort=["title","ASC"]&range=[0, 24]&filter={"title":"bar"}
   
     // Retrieve all Tutorials
-    router.get("/", task.findAll);
+    router.get("/", task.findAndCountAll);
   
     // Retrieve a single Tutorial with id
     router.get("/:id", task.findOne);
