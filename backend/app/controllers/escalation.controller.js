@@ -9,17 +9,9 @@ const Platform = db.taskplatform;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new task
+/*
 exports.create = (req, res) => {
-  // Validate request
-  // if (!req.body.taskname) {
-  //   res.status(400).send({
-  //     message: "Task name can not be empty!"
-  //   });
-  //   return;
-  // }
-
-  // Create a Task
-  const taskValues = {
+    const taskValues = {
     taskName: req.body.taskName,
     taskDate: req.body.taskDate,
     numberOfResource: req.body.numberOfResource,
@@ -47,10 +39,9 @@ exports.create = (req, res) => {
       });
     });
 };
-
-//GET http://my.api.url/posts?sort=["title","ASC"]&range=[0, 24]&filter={"title":"bar"}
-// Retrieve all task from the database.
+*/
 exports.findAndCountAll = (req, res) => {
+  console.log("***    I am here at release findandcountAll    ***");
   let taskname = null;
   let taskdatefrom = null;
   let taskdateto = null;
@@ -81,19 +72,15 @@ exports.findAndCountAll = (req, res) => {
     console.log(myKey + ":" + filter[myKey]);
     if(myKey === "taskName"){
       taskname = {taskName: { [Op.like]: `%${filter[myKey]}%` }};
-    }else if(myKey === "fromDate"){
+    }else if(myKey === "taskDate"){
       taskdatefrom = {taskDate: { [Op.gte]: filter[myKey] }};
-    }else if(myKey === "toDate"){
-      taskdatefrom = {taskDate: { [Op.lte]: filter[myKey] }};
     }else if(myKey === "numberOfResource"){
       resource = {numberOfResource: { [Op.eq]: filter[myKey] }};
     }else if(myKey === "numberOfRound"){
       round = {numberOfRound: { [Op.eq]: filter[myKey] }};
     }else if(myKey === "percentOfComplete"){
       completeto = {percentOfComplete: { [Op.lte]: filter[myKey] }};
-    }else if(myKey === "fromECD"){
-      ECDto = {ECD: { [Op.gte]: filter[myKey] }};
-    }else if(myKey === "toECD"){
+    }else if(myKey === "ECD"){
       ECDto = {ECD: { [Op.lte]: filter[myKey] }};
     }else if(myKey === "timeSpent"){
       timespentfrom = {timeSpent: { [Op.gte]: filter[myKey] }};
@@ -109,22 +96,6 @@ exports.findAndCountAll = (req, res) => {
       taskplatformid = {taskPlatformId: { [Op.eq]: filter[myKey] }};
     }    
   }
-// console.log("task after for "+JSON.stringify(taskname, null, 2));
-// console.log("resource after for "+JSON.stringify(resource, null, 2));
-//var condition = { taskname, resource };
-//   .findAndCountAll({
-//     where: {
-//        title: {
-//          $like: 'foo%'
-//        }
-//     },
-//     offset: 10,
-//     limit: 2
-//  })
-//  .then(function(result) {
-//    console.log(result.count);
-//    console.log(result.rows);
-//  });
   Task.findAndCountAll({
     include: [{
       model: User,
@@ -178,91 +149,6 @@ exports.findAndCountAll = (req, res) => {
 
 
 };
-
-/*
-// Retrieve all task from the database.
-exports.findAll = (req, res) => {
- 
-  let taskname = req.query.taskName;
-  let taskdatefrom = req.query.taskDateFrom;
-  let taskdateto = req.query.taskDateTo;
-  let resource = req.query.resource;
-  let round = req.query.round;
-  let completefrom = req.query.completeFrom;
-  let completeto = req.query.completeTo;
-  let ECDfrom = req.query.ECDFrom;
-  let ECDto = req.query.ECDTo;
-  let timespentfrom = req.query.timeSpentFrom;
-  let timespentto = req.query.timeSpentTo;
-  let userid = req.query.userId;
-  let tasktypeid = req.query.tasktypeId;
-  let customerid = req.query.customerId;
-  let taskstatusid = req.query.taskstatusId;
-
-  taskname = taskname ? {taskName: { [Op.like]: `%${taskname}%` }} : null;
-  taskdatefrom = taskdatefrom ? {taskDate: { [Op.gte]: taskdatefrom }} : null;
-  taskdateto = taskdateto ? {taskDate: { [Op.lte]: taskdateto }} : null;
-  resource = resource ? {numberOfResource: { [Op.eq]: resource }} : null;
-  round = round ? {numberOfRound: { [Op.eq]: round }} : null;
-  completefrom = completefrom ? {percentOfComplete: { [Op.gte]: completefrom }} : null;
-  completeto = completeto ? {percentOfComplete: { [Op.lte]: completeto }} : null;
-  ECDfrom = ECDfrom ? {ECD: { [Op.gte]: ECDfrom }} : null;
-  ECDto = ECDto ? {ECD: { [Op.lte]: ECDto }} : null;
-  timespentfrom = timespentfrom ? {timeSpent: { [Op.gte]: timespentfrom }} : null;
-  timespentto = timespentto ? {timeSpent: { [Op.lte]: timespentto }} : null;
-  userid = userid ? {userId: { [Op.eq]: userid }} : null;
-  tasktypeid = tasktypeid ? {tasktypeId: { [Op.eq]: tasktypeid }} : null;
-  customerid = customerid ? {customerId: { [Op.eq]: customerid }} : null;
-  taskstatusid = taskstatusid ? {taskstatusId: { [Op.eq]: taskstatusid }} : null;
-
-
-  //var condition = { taskname, resource };
-  Task.findAll({ 
-    include: [{
-      model: User,
-      required: true
-     },{
-      model: TaskType,
-      required: true
-     },{
-      model: TaskStatus,
-      required: true
-     },{
-      model: Customer,
-      required: true
-     }],
-    where: [{},
-      taskname,
-      taskdatefrom,
-      taskdateto,
-      resource,
-      round,
-      completefrom,
-      completeto,
-      ECDfrom,
-      ECDto,
-      timespentfrom,
-      timespentto,
-      userid,
-      tasktypeid,
-      customerid,
-      taskstatusid,
-    ],
-    order: [
-      ['id', 'DESC']
-  ]
-  })
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving tutorials."
-      });
-    });
-};
-*/
 // Find a single task with an id
 exports.findOne = (req, res) => {
   console.log("*** start findOne req.params is here: ");

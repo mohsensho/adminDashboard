@@ -67,6 +67,9 @@ require('./app/routes/customer.routes')(app);
 require('./app/routes/taskstatus.routes')(app);
 require('./app/routes/taskcomment.routes')(app);
 require('./app/routes/taskplatform.routes')(app);
+require('./app/routes/release.routes')(app);
+require('./app/routes/patch.routes')(app);
+require('./app/routes/escalation.routes')(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 9090;
@@ -109,7 +112,7 @@ function initial() {
 
   // Task status table initial records
   TaskStatus.create({
-    tStatus: "In progress"
+    tStatus: "In Progress"
   }); 
   TaskStatus.create({
     tStatus: "On Hold"
