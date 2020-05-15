@@ -84,7 +84,7 @@ exports.findAndCountAll = (req, res) => {
     }else if(myKey === "fromDate"){
       taskdatefrom = {taskDate: { [Op.gte]: filter[myKey] }};
     }else if(myKey === "toDate"){
-      taskdatefrom = {taskDate: { [Op.lte]: filter[myKey] }};
+      taskdateto = {taskDate: { [Op.lte]: filter[myKey] }};
     }else if(myKey === "numberOfResource"){
       resource = {numberOfResource: { [Op.eq]: filter[myKey] }};
     }else if(myKey === "numberOfRound"){
@@ -92,7 +92,7 @@ exports.findAndCountAll = (req, res) => {
     }else if(myKey === "percentOfComplete"){
       completeto = {percentOfComplete: { [Op.lte]: filter[myKey] }};
     }else if(myKey === "fromECD"){
-      ECDto = {ECD: { [Op.gte]: filter[myKey] }};
+      ECDfrom = {ECD: { [Op.gte]: filter[myKey] }};
     }else if(myKey === "toECD"){
       ECDto = {ECD: { [Op.lte]: filter[myKey] }};
     }else if(myKey === "timeSpent"){

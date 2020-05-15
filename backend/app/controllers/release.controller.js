@@ -62,7 +62,7 @@ exports.findAndCountAll = (req, res) => {
   var sort = JSON.parse(req.query['sort']);
   var range = JSON.parse(req.query['range']);
   var filter = JSON.parse(req.query['filter']);
-
+  console.log("release controller +++++++++++++++++++");
   console.log(sort);
   console.log(range);
   console.log(filter);
@@ -72,15 +72,19 @@ exports.findAndCountAll = (req, res) => {
     console.log(myKey + ":" + filter[myKey]);
     if(myKey === "taskName"){
       taskname = {taskName: { [Op.like]: `%${filter[myKey]}%` }};
-    }else if(myKey === "taskDate"){
+    }else if(myKey === "fromDate"){
       taskdatefrom = {taskDate: { [Op.gte]: filter[myKey] }};
+    }else if(myKey === "toDate"){
+      taskdateto = {taskDate: { [Op.lte]: filter[myKey] }};
     }else if(myKey === "numberOfResource"){
       resource = {numberOfResource: { [Op.eq]: filter[myKey] }};
     }else if(myKey === "numberOfRound"){
       round = {numberOfRound: { [Op.eq]: filter[myKey] }};
     }else if(myKey === "percentOfComplete"){
       completeto = {percentOfComplete: { [Op.lte]: filter[myKey] }};
-    }else if(myKey === "ECD"){
+    }else if(myKey === "fromECD"){
+      ECDfrom = {ECD: { [Op.gte]: filter[myKey] }};
+    }else if(myKey === "toECD"){
       ECDto = {ECD: { [Op.lte]: filter[myKey] }};
     }else if(myKey === "timeSpent"){
       timespentfrom = {timeSpent: { [Op.gte]: filter[myKey] }};

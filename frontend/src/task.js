@@ -3,35 +3,94 @@ import RichTextInput from 'ra-input-rich-text';
 import { 
     List, Datagrid, TextField, ReferenceField, EditButton, Filter, 
     Edit, Create, SimpleForm,TextInput, SelectInput, ReferenceInput, 
-    DateInput , TabbedForm, FormTab, ChipField, downloadCSV
+    DateInput , TabbedForm, FormTab, ChipField, downloadCSV, required
     } from 'react-admin';
 import jsonExport from 'jsonexport/dist';
 
 import CustomizableDatagrid from 'ra-customizable-datagrid';
+
+
+// for custom aand conditional formating and styles
 import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
 
 const useStyles = makeStyles({
-    green: {backgroundColor: '#ff7373' },
-    red: { backgroundColor: '#74fd74' },
-    blue: { backgroundColor: '#0398fc' },
+    green: {backgroundColor: '#00a65a' },
+    red: { backgroundColor: '#f39c12' },
+    blue: { backgroundColor: '#00c0ef' },
 });
 
+// const MyTextField = props => {
+//     const classes = useStyles();
+    
+//     const isOnhold = v => v.toUpperCase() === 'ON HOLD';
+//     const isInprogress = v => v.toUpperCase() === 'IN PROGRESS';
+//     const isCompleted = v => v.toUpperCase() === 'COMPLETED';
+//     console.log("props is = " + props.record[props.source]);
+//     console.log("isOnhold "+isOnhold(props.record[props.source]));
+//     console.log("isInprogress "+isInprogress(props.record[props.source]));
+//     console.log("isCompleted "+isCompleted(props.record[props.source]));
+//     return (
+//     <ChipField 
+//         className={classnames({
+//             [classes.red]: isOnhold(props.record[props.source]),
+//             [classes.blue]: isInprogress(props.record[props.source]),
+//             [classes.green]: isCompleted(props.record[props.source]),
+//         })}
+//         {...props} 
+//     />
+//     );
+// };
 const MyTextField = props => {
     const classes = useStyles();
     
     const isOnhold = v => v.toUpperCase() === 'ON HOLD';
     const isInprogress = v => v.toUpperCase() === 'IN PROGRESS';
     const isCompleted = v => v.toUpperCase() === 'COMPLETED';
-
-    return <ChipField  source="taskstatus.tStatus" label="Status" 
-    className={classnames({
-        [classes.red]: isOnhold(props.record["taskstatus"].tStatus),
-        [classes.blue]: isInprogress(props.record["taskstatus"].tStatus),
-        [classes.green]: isCompleted(props.record["taskstatus"].tStatus),
-    })}
-    {...props} />;
+    // console.log("props is = " + props.record[props.source]);
+    // console.log("isOnhold "+isOnhold(props.record[props.source]));
+    // console.log("isInprogress "+isInprogress(props.record[props.source]));
+    // console.log("isCompleted "+isCompleted(props.record[props.source]));
+    if(isOnhold(props.record[props.source]))
+    {
+        console.log("isOnhold is true!!!");
+        return (
+            <ChipField 
+                style={{backgroundColor: '#f39c12'}}
+                {...props} 
+            />
+        );
+    }else if(isInprogress(props.record[props.source]))
+    {
+        console.log("isInprogress is true!!!");
+        return (
+            <ChipField 
+                style={{backgroundColor: '#00c0ef'}}
+                {...props} 
+            />
+        );
+    }else if(isCompleted(props.record[props.source]))
+    {
+        console.log("isCompleted is true!!!");
+        return (
+            <ChipField 
+                style={{backgroundColor: '#00a65a'}}
+                {...props} 
+            />
+        );
+    }
+    // return (
+    // <ChipField 
+    //     className={classnames({
+    //         [classes.red]: isOnhold(props.record[props.source]),
+    //         [classes.blue]: isInprogress(props.record[props.source]),
+    //         [classes.green]: isCompleted(props.record[props.source]),
+    //     })}
+    //     {...props} 
+    // />
+    // );
 };
+// config export to .csv
 const exporter = tasks => {
     const tasksForExport = tasks.map(task => {
         let taskForExport = {};
@@ -57,6 +116,7 @@ const exporter = tasks => {
         downloadCSV(csv, 'TasksDashboard'); // download as 'posts.csv` file
     });
 };
+
 const TaskFilter = (props) => (
     <Filter {...props}>
         <TextInput label="Search Task Name" source="taskName" alwaysOn/>
@@ -127,15 +187,10 @@ const TaskFilter = (props) => (
         */}
     </Filter>
 );
-const PostList = props => (
-    <List {...props}>
-      <CustomizableDatagrid>
-        <TextField source="id" />
-        <TextField source="title" />
-      </CustomizableDatagrid>
-    </List>
-  );
-export const TaskList = props => (
+MyTextField.defaultProps = ReferenceField.defaultProps; // for set classes to myTextField
+export const TaskList = props =>{
+    const classes = useStyles();
+    return(
     <List filters={<TaskFilter />} {...props} exporter={exporter}>
         <CustomizableDatagrid rowClick="edit">
             <TextField source="taskName" label="Name" />
@@ -145,20 +200,23 @@ export const TaskList = props => (
             <TextField source="percentOfComplete" label="%Complete" />
             <TextField source="ECD" label="ECD" />
             <TextField source="timeSpent" label="Time Spent" />
-            <TextField source="user.email" label="User" />
             <TextField source="tasktype.tType" label="Type" />
             <TextField source="customer.cName" label="Customer" />
-            <MyTextField/>
+            <ReferenceField source="taskstatusId" reference="taskstatus" label="Status">
+                <MyTextField source="tStatus" label="Status"/>
+            </ReferenceField>
             <TextField source="taskPlatform.tPlatform" label="Platform"/>
+            <TextField source="user.email" label="User" />
         </CustomizableDatagrid>
     </List>
-);
+)};
 const TaskTitle = ({ record }) => {
-        return <span>Task {record ? `"${record.title}"` : ''}</span>;
+        return <span>Task {record ? `"${record.taskName}"` : ''}</span>;
     };
+
 export const TaskEdit = props => (
-    <Edit title={<TaskTitle />} {...props}>
-    <TabbedForm>
+    <Edit title={<TaskTitle />} {...props} >
+    <TabbedForm redirect="/task">
         <FormTab label="Task Information">
             <TextInput label="Task Name" source="taskName" alwaysOn/>
             <DateInput
@@ -168,10 +226,11 @@ export const TaskEdit = props => (
                     mode: "portrait",
                     locales: "America/Los_Angeles"
                 }}
+                validate={required()}
             />
-            <TextInput label="# Resource" source="numberOfResource" />
-            <TextInput label="# Round" source="numberOfRound" />
-            <TextInput source="percentOfComplete" label="% Complete" />
+            <TextInput label="# Resource" source="numberOfResource" validate={required()} />
+            <TextInput label="# Round" source="numberOfRound" validate={required()} />
+            <TextInput source="percentOfComplete" label="% Complete" validate={required()} />
             <DateInput
                 source="ECD" 
                 label="To ECD" 
@@ -179,22 +238,23 @@ export const TaskEdit = props => (
                     mode: "portrait",
                     locales: "America/Los_Angeles"
                 }}
+                validate={required()} 
             />
-            <TextInput source="timeSpent" label="Time Spent From" />
-            <ReferenceInput label="User" source="userId" reference="users" allowEmpty>
-                <SelectInput optionText="email" />
+            <TextInput source="timeSpent" label="Time Spent From" validate={required()} />
+            <ReferenceInput label="User" source="userId" reference="users" allowEmpty={false}>
+                <SelectInput optionText="email"  validate={required()}/>
             </ReferenceInput>
-            <ReferenceInput label="Type" source="tasktypeId" reference="tasktype" allowEmpty>
-                <SelectInput optionText="tType" />
+            <ReferenceInput label="Type" source="tasktypeId" reference="tasktype" allowEmpty={false}>
+                <SelectInput optionText="tType" validate={required()} />
             </ReferenceInput>
-            <ReferenceInput label="Customer" source="customerId" reference="customer" allowEmpty>
-                <SelectInput optionText="cName" />
+            <ReferenceInput label="Customer" source="customerId" reference="customer" allowEmpty={false}>
+                <SelectInput optionText="cName" validate={required()} />
             </ReferenceInput>
-            <ReferenceInput label="Status" source="taskstatusId" reference="taskstatus" allowEmpty>
-                <SelectInput optionText="tStatus" />
+            <ReferenceInput label="Status" source="taskstatusId" reference="taskstatus" allowEmpty={false}>
+                <SelectInput optionText="tStatus" validate={required()} />
             </ReferenceInput>
-            <ReferenceInput label="Platform" source="taskPlatformId" reference="taskplatform" allowEmpty>
-                <SelectInput optionText="tPlatform" />
+            <ReferenceInput label="Platform" source="taskPlatformId" reference="taskplatform" allowEmpty={false}>
+                <SelectInput optionText="tPlatform" validate={required()} />
             </ReferenceInput>
         </FormTab>
         <FormTab label="Task Comment">
@@ -205,8 +265,8 @@ export const TaskEdit = props => (
 );
 export const TaskCreate = props => (
     <Create {...props}>
-        <SimpleForm>
-            <TextInput label="Task Name" source="taskName" alwaysOn/>
+        <SimpleForm redirect="/task">
+            <TextInput label="Task Name" source="taskName" alwaysOn validate={required()}/>
             <DateInput
                 source="taskDate" 
                 label="From Date" 
@@ -214,10 +274,11 @@ export const TaskCreate = props => (
                     mode: "portrait",
                     locales: "America/Los_Angeles"
                 }}
+                validate={required()}
             />
-            <TextInput label="# Resource" source="numberOfResource" />
-            <TextInput label="# Round" source="numberOfRound" />
-            <TextInput source="percentOfComplete" label="% Complete" />
+            <TextInput label="# Resource" source="numberOfResource" validate={required()}/>
+            <TextInput label="# Round" source="numberOfRound" validate={required()}/>
+            <TextInput source="percentOfComplete" label="% Complete" validate={required()}/>
             <DateInput
                 source="ECD" 
                 label="To ECD" 
@@ -225,22 +286,23 @@ export const TaskCreate = props => (
                     mode: "portrait",
                     locales: "America/Los_Angeles"
                 }}
+                validate={required()}
             />
-            <TextInput source="timeSpent" label="Time Spent From" />
-            <ReferenceInput label="User" source="userId" reference="users" allowEmpty>
-                <SelectInput optionText="email" />
+            <TextInput source="timeSpent" label="Time Spent From" validate={required()}/>
+            <ReferenceInput label="User" source="userId" reference="users" allowEmpty={false}>
+                <SelectInput optionText="email" validate={required()} />
             </ReferenceInput>
-            <ReferenceInput label="Type" source="tasktypeId" reference="tasktype" allowEmpty>
-                <SelectInput optionText="tType" />
+            <ReferenceInput label="Type" source="tasktypeId" reference="tasktype" allowEmpty={false}>
+                <SelectInput optionText="tType" validate={required()} />
             </ReferenceInput>
-            <ReferenceInput label="Customer" source="customerId" reference="customer" allowEmpty>
-                <SelectInput optionText="cName" />
+            <ReferenceInput label="Customer" source="customerId" reference="customer" allowEmpty={false}>
+                <SelectInput optionText="cName" validate={required()} />
             </ReferenceInput>
-            <ReferenceInput label="Status" source="taskstatusId" reference="taskstatus" allowEmpty>
-                <SelectInput optionText="tStatus" />
+            <ReferenceInput label="Status" source="taskstatusId" reference="taskstatus" allowEmpty={false}>
+                <SelectInput optionText="tStatus" validate={required()} />
             </ReferenceInput>
-            <ReferenceInput label="Platform" source="taskPlatformId" reference="taskplatform" allowEmpty>
-                <SelectInput optionText="tPlatform" />
+            <ReferenceInput label="Platform" source="taskPlatformId" reference="taskplatform" allowEmpty={false}>
+                <SelectInput optionText="tPlatform" validate={required()} />
             </ReferenceInput>
             <RichTextInput  source="taskComments" label="Task Comments" />
         </SimpleForm>

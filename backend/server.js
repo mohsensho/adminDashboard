@@ -93,8 +93,8 @@ function initial() {
     password: "$2a$08$gDmNSi.g9j2hA8CjPP3f.eMpFVl3Ef3Wq3kzvpE/YMPuZflHKlmv2"
   });
   User.create({
-    username: "nasrinmo",
-    email: "nasrin.mostajeran@lamresearch.com",
+    username: "shenale",
+    email: "alex.shen@lamresearch.com",
     password: "$2a$08$gDmNSi.g9j2hA8CjPP3f.eMpFVl3Ef3Wq3kzvpE/YMPuZflHKlmv2"
   });
 
