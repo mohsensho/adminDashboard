@@ -177,6 +177,7 @@ function initial() {
     customerId: 1,
     taskstatusId: 1,
     taskComments: "Comment 1",
+    escalationPriority: "Hot",
     taskPlatformId: 1
   });
   TaskTable.create({
@@ -194,6 +195,7 @@ function initial() {
     customerId: 2,
     taskstatusId: 2,
     taskComments: "Comment 2",
+    escalationPriority: null,
     taskPlatformId: 2
   });
   TaskTable.create({
@@ -211,6 +213,7 @@ function initial() {
     customerId: 3,
     taskstatusId: 3,
     taskComments: "Comment 3",
+    escalationPriority: null,
     taskPlatformId: 3
   });
 }

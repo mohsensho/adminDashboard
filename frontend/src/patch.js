@@ -11,47 +11,11 @@ import CustomizableDatagrid from 'ra-customizable-datagrid';
 
 
 // for custom aand conditional formating and styles
-import { makeStyles } from '@material-ui/core/styles';
-import classnames from 'classnames';
-
-const useStyles = makeStyles({
-    green: {backgroundColor: '#00a65a' },
-    red: { backgroundColor: '#f39c12' },
-    blue: { backgroundColor: '#00c0ef' },
-});
-
-// const MyTextField = props => {
-//     const classes = useStyles();
-    
-//     const isOnhold = v => v.toUpperCase() === 'ON HOLD';
-//     const isInprogress = v => v.toUpperCase() === 'IN PROGRESS';
-//     const isCompleted = v => v.toUpperCase() === 'COMPLETED';
-//     console.log("props is = " + props.record[props.source]);
-//     console.log("isOnhold "+isOnhold(props.record[props.source]));
-//     console.log("isInprogress "+isInprogress(props.record[props.source]));
-//     console.log("isCompleted "+isCompleted(props.record[props.source]));
-//     return (
-//     <ChipField 
-//         className={classnames({
-//             [classes.red]: isOnhold(props.record[props.source]),
-//             [classes.blue]: isInprogress(props.record[props.source]),
-//             [classes.green]: isCompleted(props.record[props.source]),
-//         })}
-//         {...props} 
-//     />
-//     );
-// };
-
 const MyTextField = props => {
-    const classes = useStyles();
     
     const isOnhold = v => v.toUpperCase() === 'ON HOLD';
     const isInprogress = v => v.toUpperCase() === 'IN PROGRESS';
     const isCompleted = v => v.toUpperCase() === 'COMPLETED';
-    // console.log("props is = " + props.record[props.source]);
-    // console.log("isOnhold "+isOnhold(props.record[props.source]));
-    // console.log("isInprogress "+isInprogress(props.record[props.source]));
-    // console.log("isCompleted "+isCompleted(props.record[props.source]));
     if(isOnhold(props.record[props.source]))
     {
         console.log("isOnhold is true!!!");
@@ -80,16 +44,6 @@ const MyTextField = props => {
             />
         );
     }
-    // return (
-    // <ChipField 
-    //     className={classnames({
-    //         [classes.red]: isOnhold(props.record[props.source]),
-    //         [classes.blue]: isInprogress(props.record[props.source]),
-    //         [classes.green]: isCompleted(props.record[props.source]),
-    //     })}
-    //     {...props} 
-    // />
-    // );
 };
 // config export to .csv
 const exporter = tasks => {
@@ -178,6 +132,7 @@ const PatchFilter = (props) => (
         </ReferenceInput>
     </Filter>
 );
+MyTextField.defaultProps = ReferenceField.defaultProps; // for set classes to myTextField
 export const PatchList = props => (
     <List filters={<PatchFilter />} filterDefaultValues={{ tasktypeId: "3" }} {...props}>
         <CustomizableDatagrid rowClick="edit">

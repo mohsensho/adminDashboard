@@ -8,6 +8,7 @@ const Platform = db.taskplatform;
 //const Comment = db.taskcomments;
 const Op = db.Sequelize.Op;
 
+
 // Create and Save a new task
 exports.create = (req, res) => {
   // Validate request
@@ -19,6 +20,8 @@ exports.create = (req, res) => {
   // }
 
   // Create a Task
+  
+  let escalationPriority = null;
   const taskValues = {
     taskName: req.body.taskName,
     taskDate: req.body.taskDate,
@@ -32,9 +35,10 @@ exports.create = (req, res) => {
     customerId: req.body.customerId,
     taskstatusId: req.body.taskstatusId,
     taskPlatformId: req.body.taskPlatformId,
-    taskComments: req.body.taskComments
+    taskComments: req.body.taskComments,
+    escalationPriority: req.body.priority ? req.body.priority : null,
   };
-
+  console.log("Filter in task create is=  " + JSON.stringify(req.body, null, 2));
   // Save task in the database
   Task.create(taskValues)
     .then(data => {
@@ -74,11 +78,11 @@ exports.findAndCountAll = (req, res) => {
 
   console.log(sort);
   console.log(range);
-  console.log(filter);
+
   console.log("+++++++++++++++++++");
   //let whereCondition = [{}];
   for(var myKey in filter) {
-    console.log(myKey + ":" + filter[myKey]);
+    console.log("Key: " +myKey + " : " + "keyValue: " +filter[myKey]);
     if(myKey === "taskName"){
       taskname = {taskName: { [Op.like]: `%${filter[myKey]}%` }};
     }else if(myKey === "fromDate"){

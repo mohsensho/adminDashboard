@@ -1,48 +1,37 @@
-import React from 'react';
+import React, { Fragment } from 'react';
+
 import RichTextInput from 'ra-input-rich-text';
 import { 
     List, Datagrid, TextField, ReferenceField, EditButton, Filter, 
-    Edit, Create, SimpleForm,TextInput, SelectInput, ReferenceInput, 
-    DateInput , TabbedForm, FormTab, ChipField, downloadCSV, required
+    Edit, Create, SimpleForm,TextInput, SelectInput, ReferenceInput, BooleanInput,  
+    DateInput , TabbedForm, FormTab, ChipField, downloadCSV, required, FormDataConsumer  
     } from 'react-admin';
 import jsonExport from 'jsonexport/dist';
-
 import CustomizableDatagrid from 'ra-customizable-datagrid';
-
-
-// for custom aand conditional formating and styles
+// styling priorityFeild
 import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
-
 const useStyles = makeStyles({
-    green: {backgroundColor: '#00a65a' },
-    red: { backgroundColor: '#f39c12' },
-    blue: { backgroundColor: '#00c0ef' },
+    yellow: { color: '#f4fc03', fontWeight: 'bold' },
+    orange: { color: '#fc8803', fontWeight: 'bold' },
+    red: { color: '#cc0000', fontWeight: 'bold'},
 });
-
-// const MyTextField = props => {
-//     const classes = useStyles();
-    
-//     const isOnhold = v => v.toUpperCase() === 'ON HOLD';
-//     const isInprogress = v => v.toUpperCase() === 'IN PROGRESS';
-//     const isCompleted = v => v.toUpperCase() === 'COMPLETED';
-//     console.log("props is = " + props.record[props.source]);
-//     console.log("isOnhold "+isOnhold(props.record[props.source]));
-//     console.log("isInprogress "+isInprogress(props.record[props.source]));
-//     console.log("isCompleted "+isCompleted(props.record[props.source]));
-//     return (
-//     <ChipField 
-//         className={classnames({
-//             [classes.red]: isOnhold(props.record[props.source]),
-//             [classes.blue]: isInprogress(props.record[props.source]),
-//             [classes.green]: isCompleted(props.record[props.source]),
-//         })}
-//         {...props} 
-//     />
-//     );
-// };
-const MyTextField = props => {
+const PriorityFeild = props => {
     const classes = useStyles();
+    return (
+        <TextField
+            className={classnames({
+                [classes.yellow]: props.record[props.source] == "Low",
+                [classes.orange]: props.record[props.source] == "Medium",
+                [classes.red]: props.record[props.source] == "Hot",
+            })}
+            {...props}
+        />
+    );
+};
+
+// Task Type
+const MyTextField = props => {
     
     const isOnhold = v => v.toUpperCase() === 'ON HOLD';
     const isInprogress = v => v.toUpperCase() === 'IN PROGRESS';
@@ -79,16 +68,6 @@ const MyTextField = props => {
             />
         );
     }
-    // return (
-    // <ChipField 
-    //     className={classnames({
-    //         [classes.red]: isOnhold(props.record[props.source]),
-    //         [classes.blue]: isInprogress(props.record[props.source]),
-    //         [classes.green]: isCompleted(props.record[props.source]),
-    //     })}
-    //     {...props} 
-    // />
-    // );
 };
 // config export to .csv
 const exporter = tasks => {
@@ -187,12 +166,14 @@ const TaskFilter = (props) => (
         */}
     </Filter>
 );
+
+PriorityFeild.defaultProps = ChipField.defaultProps;
 MyTextField.defaultProps = ReferenceField.defaultProps; // for set classes to myTextField
 export const TaskList = props =>{
-    const classes = useStyles();
     return(
     <List filters={<TaskFilter />} {...props} exporter={exporter}>
         <CustomizableDatagrid rowClick="edit">
+            <PriorityFeild source="escalationPriority" label="Priority"></PriorityFeild>
             <TextField source="taskName" label="Name" />
             <TextField source="taskDate" label="Date" />
             <TextField source="numberOfResource" label="#Resource" />
@@ -247,6 +228,15 @@ export const TaskEdit = props => (
             <ReferenceInput label="Type" source="tasktypeId" reference="tasktype" allowEmpty={false}>
                 <SelectInput optionText="tType" validate={required()} />
             </ReferenceInput>
+            <FormDataConsumer>
+                 {({ formData, ...rest }) => formData.tasktypeId == "1" &&
+                      <SelectInput source="priority" validate={required()} choices={[
+                        { id: 'Hot', name: 'Hot' },
+                        { id: 'Medium', name: 'Medium' },
+                        { id: 'Low', name: 'Low' },
+                    ]} />
+                 }
+             </FormDataConsumer>
             <ReferenceInput label="Customer" source="customerId" reference="customer" allowEmpty={false}>
                 <SelectInput optionText="cName" validate={required()} />
             </ReferenceInput>
@@ -265,7 +255,7 @@ export const TaskEdit = props => (
 );
 export const TaskCreate = props => (
     <Create {...props}>
-        <SimpleForm redirect="/task">
+        <SimpleForm redirect="/task">             
             <TextInput label="Task Name" source="taskName" alwaysOn validate={required()}/>
             <DateInput
                 source="taskDate" 
@@ -295,6 +285,15 @@ export const TaskCreate = props => (
             <ReferenceInput label="Type" source="tasktypeId" reference="tasktype" allowEmpty={false}>
                 <SelectInput optionText="tType" validate={required()} />
             </ReferenceInput>
+            <FormDataConsumer>
+                 {({ formData, ...rest }) => formData.tasktypeId == "1" &&
+                      <SelectInput source="priority" validate={required()} choices={[
+                        { id: 'Hot', name: 'Hot' },
+                        { id: 'Medium', name: 'Medium' },
+                        { id: 'Low', name: 'Low' },
+                    ]} />
+                 }
+             </FormDataConsumer>
             <ReferenceInput label="Customer" source="customerId" reference="customer" allowEmpty={false}>
                 <SelectInput optionText="cName" validate={required()} />
             </ReferenceInput>
@@ -307,4 +306,5 @@ export const TaskCreate = props => (
             <RichTextInput  source="taskComments" label="Task Comments" />
         </SimpleForm>
     </Create>
+
 );

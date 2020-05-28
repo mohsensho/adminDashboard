@@ -29,8 +29,10 @@ module.exports = (sequelize, Sequelize) => {
         },
         taskComments: {
             type: Sequelize.TEXT
-        }
-
+        },
+        escalationPriority: {
+            type: Sequelize.STRING
+        },
      });
     
     return TaskTable;

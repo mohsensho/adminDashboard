@@ -5,7 +5,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 
 export default () => (
     <Card>
-        <CardHeader title="Welcome to the SW 300 Dashboard" />
-        <CardContent>Welcome to the SW 300 Dashboard</CardContent>
+        <CardHeader title="Welcome!" />
+        <CardContent>Welcome to the 300 MM Software Dashboard</CardContent>
     </Card>
 );
